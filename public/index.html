@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Xyl-bypass · link unlocker</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* Same styles as before – keeping it clean */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#0b0d11; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:1.5rem; color:#e8edf5; }
+        .bypass-card { max-width:600px; width:100%; background:#13171f; border-radius:2rem; padding:2.5rem 2rem 2.8rem; box-shadow:0 20px 50px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.04); border:1px solid #252b36; }
+        .brand { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.3rem; }
+        .brand-icon { font-size:2rem; background:linear-gradient(135deg,#7c6df0,#5a4bd1); width:48px; height:48px; display:flex; align-items:center; justify-content:center; border-radius:14px; color:#fff; box-shadow:0 6px 16px rgba(90,75,209,0.35); }
+        .brand-text { font-size:1.8rem; font-weight:700; letter-spacing:-0.5px; background:linear-gradient(135deg,#f0f4ff,#b7c0e6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .brand-badge { font-size:0.7rem; font-weight:600; text-transform:uppercase; background:#202732; color:#9aa4bf; padding:0.2rem 0.8rem; border-radius:40px; border:1px solid #2f3745; margin-left:0.3rem; -webkit-text-fill-color:#9aa4bf; }
+        .tagline { color:#8892b0; font-size:0.95rem; margin-top:0.1rem; margin-bottom:1.8rem; padding-left:0.9rem; border-left:3px solid #5a4bd1; font-weight:400; }
+        .tagline i { color:#5a4bd1; margin-right:0.4rem; }
+        .stats { display:flex; gap:1.8rem; background:#0e121a; padding:0.8rem 1.2rem; border-radius:60px; margin-bottom:2rem; border:1px solid #212833; flex-wrap:wrap; }
+        .stat-item { display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; color:#9aa4bf; }
+        .stat-item i { color:#5a4bd1; font-size:0.9rem; width:1.1rem; }
+        .stat-item strong { color:#e8edf5; font-weight:600; }
+        .input-group { display:flex; flex-direction:column; gap:0.75rem; }
+        .input-row { display:flex; gap:0.6rem; align-items:center; background:#0e121a; border-radius:60px; padding:0.2rem 0.2rem 0.2rem 1.5rem; border:1px solid #252d3b; transition:border .2s,box-shadow .2s; }
+        .input-row:focus-within { border-color:#5a4bd1; box-shadow:0 0 0 3px rgba(90,75,209,0.15); }
+        .input-row i { color:#5f6b89; font-size:1rem; }
+        .input-row input { flex:1; background:transparent; border:none; padding:0.9rem 0; font-size:0.95rem; color:#e8edf5; outline:none; font-family:'Inter',sans-serif; min-width:0; }
+        .input-row input::placeholder { color:#4f5a73; }
+        .input-row button { background:linear-gradient(135deg,#7c6df0,#5a4bd1); border:none; color:#fff; font-weight:600; font-size:0.95rem; padding:0.8rem 1.8rem; border-radius:60px; cursor:pointer; transition:transform .15s,box-shadow .2s; white-space:nowrap; font-family:'Inter',sans-serif; display:flex; align-items:center; gap:0.5rem; }
+        .input-row button:hover { transform:scale(1.02); box-shadow:0 6px 20px rgba(90,75,209,0.4); }
+        .input-row button:active { transform:scale(0.97); }
+        .input-row button:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        .input-row button i { color:#fff; font-size:0.9rem; }
+        .status-area { margin-top:1.5rem; min-height:3.2rem; display:flex; align-items:center; gap:0.8rem; background:#0e121a; border-radius:40px; padding:0.6rem 1.5rem; border:1px solid #1f2632; transition:border .25s,background .25s; }
+        .status-area .status-icon { font-size:1.1rem; color:#5f6b89; transition:color .3s; min-width:1.4rem; text-align:center; }
+        .status-area .status-text { font-size:0.9rem; color:#8892b0; flex:1; word-break:break-all; }
+        .status-area .status-text a { color:#7c6df0; text-decoration:none; font-weight:500; word-break:break-all; }
+        .status-area .status-text a:hover { text-decoration:underline; }
+        .status-area .status-text .error-msg { color:#f26464; }
+        .status-area.success { border-color:#2e7d5e; background:#0f1e18; }
+        .status-area.success .status-icon { color:#3dd68c; }
+        .status-area.error { border-color:#8b3a3a; background:#1f1212; }
+        .status-area.error .status-icon { color:#f26464; }
+        .status-area.loading { border-color:#4a3f7a; background:#15122b; }
+        .status-area.loading .status-icon { color:#7c6df0; }
+        .supported { margin-top:1.8rem; display:flex; flex-wrap:wrap; gap:0.5rem 0.8rem; justify-content:center; border-top:1px solid #1f2632; padding-top:1.5rem; }
+        .supported span { font-size:0.7rem; font-weight:500; text-transform:uppercase; letter-spacing:0.03em; background:#181e28; padding:0.25rem 0.9rem; border-radius:40px; color:#6f7b99; border:1px solid #242c3a; }
+        .supported span i { margin-right:0.3rem; font-size:0.65rem; color:#5a4bd1; }
+        .supported span .check { color:#3dd68c; }
+        .footer-note { margin-top:1.5rem; text-align:center; font-size:0.7rem; color:#3b445b; letter-spacing:0.02em; }
+        .copy-btn { background:transparent; border:1px solid #2e3748; color:#9aa4bf; padding:0.2rem 0.8rem; border-radius:20px; cursor:pointer; font-size:0.7rem; transition:all .2s; margin-left:0.5rem; }
+        .copy-btn:hover { background:#2e3748; color:#e8edf5; }
+        .debug-info { margin-top:0.5rem; font-size:0.7rem; color:#4f5a73; word-break:break-all; max-height:80px; overflow-y:auto; border-top:1px solid #1f2632; padding-top:0.5rem; display:none; }
+        .debug-info.show { display:block; }
+        @media (max-width:480px) { .bypass-card { padding:1.8rem 1.2rem 2rem; } .brand-text { font-size:1.4rem; } .brand-icon { width:40px; height:40px; font-size:1.6rem; } .input-row { padding-left:1rem; flex-wrap:wrap; background:transparent; border:none; gap:0.5rem; } .input-row input { background:#0e121a; padding:0.9rem 1.2rem; border-radius:60px; width:100%; border:1px solid #252d3b; } .input-row button { width:100%; justify-content:center; padding:0.9rem; } .stats { gap:1rem; padding:0.6rem 1rem; border-radius:30px; } .stat-item { font-size:0.75rem; } .status-area { padding:0.6rem 1rem; min-height:2.8rem; } .supported span { font-size:0.6rem; padding:0.15rem 0.7rem; } }
+    </style>
+</head>
+<body>
+    <div class="bypass-card">
+        <div class="brand">
+            <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+            <span class="brand-text">Xyl-bypass</span>
+            <span class="brand-badge">v3</span>
+        </div>
+        <div class="tagline"><i class="fas fa-arrow-right"></i> paste any locked link · instant unlock</div>
+        <div class="stats">
+            <div class="stat-item"><i class="fas fa-link"></i><span>unlocked <strong id="countDisplay">0</strong></span></div>
+            <div class="stat-item"><i class="fas fa-shield-alt"></i><span>100% <span style="color:#6f7b99;">client‑side</span></span></div>
+            <div class="stat-item"><i class="fas fa-clock"></i><span>~ <span id="speedDisplay">0.0</span>s avg</span></div>
+        </div>
+        <div class="input-group">
+            <div class="input-row">
+                <i class="fas fa-paste"></i>
+                <input type="url" id="linkInput" placeholder="https://linkvertise.com/..." autofocus spellcheck="false" />
+                <button id="bypassBtn"><i class="fas fa-arrow-right"></i> Unlock</button>
+            </div>
+        </div>
+        <div class="status-area" id="statusArea">
+            <div class="status-icon" id="statusIcon"><i class="fas fa-circle" style="font-size:0.5rem;color:#3b445b;"></i></div>
+            <div class="status-text" id="statusText">paste a link and hit Unlock</div>
+        </div>
+        <div class="debug-info" id="debugInfo"></div>
+        <div class="supported">
+            <span><i class="fas fa-check-circle check"></i> Linkvertise</span>
+            <span><i class="fas fa-check-circle check"></i> Loot‑Link</span>
+            <span><i class="fas fa-check-circle check"></i> Work.ink</span>
+            <span><i class="fas fa-check-circle check"></i> Rekonise</span>
+            <span><i class="fas fa-check-circle check"></i> Sub2Unlock</span>
+            <span><i class="fas fa-check-circle check"></i> +30 more</span>
+        </div>
+        <div class="footer-note"><i class="fas fa-lock" style="opacity:0.3;"></i> no logs · no tracking · pure browser</div>
+    </div>
+
+    <script>
+        (function() {
+            const linkInput = document.getElementById('linkInput');
+            const bypassBtn = document.getElementById('bypassBtn');
+            const statusArea = document.getElementById('statusArea');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            const countDisplay = document.getElementById('countDisplay');
+            const speedDisplay = document.getElementById('speedDisplay');
+            const debugInfo = document.getElementById('debugInfo');
+
+            let processedCount = parseInt(localStorage.getItem('xyl_count') || '0', 10);
+            countDisplay.textContent = processedCount;
+            let startTime = 0;
+            let avgTimes = [];
+
+            function setStatus(type, message, link = null, debug = null) {
+                statusArea.classList.remove('success', 'error', 'loading');
+                if (type === 'loading') {
+                    statusArea.classList.add('loading');
+                    statusIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                    statusText.innerHTML = message || 'unlocking…';
+                    debugInfo.classList.remove('show');
+                    return;
+                }
+                if (type === 'success') {
+                    statusArea.classList.add('success');
+                    statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    if (link) {
+                        const copyBtn = `<button class="copy-btn" onclick="navigator.clipboard.writeText('${link.replace(/'/g, "\\'")}')"><i class="fas fa-copy"></i> copy</button>`;
+                        statusText.innerHTML = `✅ unlocked → <a href="${link}" target="_blank" rel="noopener">${link}</a> ${copyBtn}`;
+                    } else {
+                        statusText.innerHTML = message || 'done ✓';
+                    }
+                    debugInfo.classList.remove('show');
+                    return;
+                }
+                if (type === 'error') {
+                    statusArea.classList.add('error');
+                    statusIcon.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                    statusText.innerHTML = `<span class="error-msg">${message || 'something went wrong'}</span>`;
+                    if (debug) {
+                        debugInfo.textContent = '🔍 Debug: ' + debug;
+                        debugInfo.classList.add('show');
+                    } else {
+                        debugInfo.classList.remove('show');
+                    }
+                    return;
+                }
+                statusIcon.innerHTML = '<i class="fas fa-circle" style="font-size:0.5rem;color:#3b445b;"></i>';
+                statusText.innerHTML = message || 'paste a link and hit Unlock';
+                debugInfo.classList.remove('show');
+            }
+
+            async function handleBypass() {
+                const raw = linkInput.value.trim();
+                if (!raw) {
+                    setStatus('error', 'Please paste a link first.');
+                    return;
+                }
+
+                startTime = performance.now();
+                setStatus('loading', 'fetching and unlocking…');
+                bypassBtn.disabled = true;
+                bypassBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Unlocking';
+
+                try {
+                    const response = await fetch('/api', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ link: raw })
+                    });
+
+                    // Get raw text first to handle non-JSON responses
+                    const text = await response.text();
+                    let result;
+                    try {
+                        result = JSON.parse(text);
+                    } catch (parseErr) {
+                        setStatus('error', 'Server returned invalid response', null, 'Not JSON: ' + text.substring(0, 200));
+                        bypassBtn.disabled = false;
+                        bypassBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Unlock';
+                        return;
+                    }
+
+                    if (result.success && result.destination) {
+                        processedCount += 1;
+                        localStorage.setItem('xyl_count', String(processedCount));
+                        countDisplay.textContent = processedCount;
+
+                        const elapsed = ((performance.now() - startTime) / 1000);
+                        avgTimes.push(elapsed);
+                        if (avgTimes.length > 20) avgTimes.shift();
+                        const avg = avgTimes.reduce((a,b) => a+b, 0) / avgTimes.length;
+                        speedDisplay.textContent = avg.toFixed(1);
+
+                        setStatus('success', result.message || 'Success!', result.destination);
+                    } else {
+                        setStatus('error', result.error || 'Could not unlock the link.', null, JSON.stringify(result));
+                    }
+                } catch (err) {
+                    setStatus('error', 'Network error: ' + err.message, null, err.stack);
+                } finally {
+                    bypassBtn.disabled = false;
+                    bypassBtn.innerHTML = '<i class="fas fa-arrow-right"></i> Unlock';
+                }
+            }
+
+            bypassBtn.addEventListener('click', handleBypass);
+            linkInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); handleBypass(); }
+            });
+            window.addEventListener('load', () => setTimeout(() => linkInput.focus(), 300));
+            linkInput.addEventListener('paste', () => {
+                setTimeout(() => {
+                    const val = linkInput.value.trim();
+                    if (val && (val.includes('http') || val.includes('.'))) setStatus('idle', 'ready to unlock');
+                }, 50);
+            });
+            window.__xyl = { bypass: handleBypass };
+            console.log('🟣 Xyl-bypass v3 ready');
+        })();
+    </script>
+</body>
+</html>
